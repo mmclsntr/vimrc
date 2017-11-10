@@ -1,3 +1,4 @@
+set enc=utf-8
 set fenc=utf-8
 set nobackup
 set noswapfile
@@ -19,10 +20,10 @@ nnoremap k gk
 syntax on
 
 " set list listchars=tab:\▸\-
-set tabstop=4
-set shiftwidth=4
+set tabstop=2
+set shiftwidth=2
 set expandtab
-set softtabstop=4
+set softtabstop=2
 
 "タブ、空白、改行の可視化
 set list
