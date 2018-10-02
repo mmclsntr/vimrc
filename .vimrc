@@ -115,6 +115,9 @@ set softtabstop=0
 set shiftwidth=4
 set expandtab
 
+"" virtualedit
+set virtualedit=onemore
+
 "" Map leader to ,
 let mapleader=','
 
@@ -400,9 +403,10 @@ if has('autocmd')
 endif
 
 "" Copy/Paste/Cut
-if has('unnamedplus')
-  set clipboard=unnamed,unnamedplus
-endif
+"if has('unnamedplus')
+"  set clipboard=unnamed,unnamedplus
+"endif
+set clipboard+=unnamed
 
 noremap YY "+y<CR>
 noremap <leader>p "+gP<CR>
