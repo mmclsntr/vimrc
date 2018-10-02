@@ -133,7 +133,7 @@ set nobackup
 set noswapfile
 
 set fileformats=unix,dos,mac
-set ambiwidth=double
+"set ambiwidth=double
 
 if exists('$SHELL')
     set shell=$SHELL
