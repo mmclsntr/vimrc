@@ -43,7 +43,7 @@ Plug 'vim-scripts/CSApprox'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'Raimondi/delimitMate'
 Plug 'majutsushi/tagbar'
-Plug 'scrooloose/syntastic'
+""Plug 'scrooloose/syntastic'
 Plug 'Yggdroot/indentLine'
 Plug 'avelino/vim-bootstrap-updater'
 Plug 'sheerun/vim-polyglot'
@@ -76,6 +76,15 @@ Plug 'honza/vim-snippets'
 
 "" Color
 Plug 'tomasr/molokai'
+
+"" neovim
+Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
+Plug 'Shougo/deoplete.nvim'
+Plug 'Shougo/unite.vim'
+
 
 "*****************************************************************************
 "" Custom bundles
@@ -114,9 +123,6 @@ set tabstop=4
 set softtabstop=0
 set shiftwidth=4
 set expandtab
-
-"" virtualedit
-set virtualedit=onemore
 
 "" Map leader to ,
 let mapleader=','
@@ -212,6 +218,9 @@ set modelines=10
 set title
 set titleold="Terminal"
 set titlestring=%F
+
+"" VirtualEdit
+set virtualedit=onemore
 
 set statusline=%F%m%r%h%w%=(%{&ff}/%Y)\ (line\ %l\/%L,\ col\ %c)\
 
@@ -346,6 +355,10 @@ nnoremap <Tab> gt
 nnoremap <S-Tab> gT
 nnoremap <silent> <S-t> :tabnew<CR>
 
+"" Cursor
+nnoremap j gj
+nnoremap k gk
+
 "" Set working directory
 nnoremap <leader>. :lcd %:p:h<CR>
 
@@ -356,7 +369,7 @@ noremap <Leader>e :e <C-R>=expand("%:p:h") . "/" <CR>
 noremap <Leader>te :tabe <C-R>=expand("%:p:h") . "/" <CR>
 
 "" fzf.vim
-set wildmode=list:longest,list:full
+set wildmode=list:longest
 set wildignore+=*.o,*.obj,.git,*.rbc,*.pyc,__pycache__
 let $FZF_DEFAULT_COMMAND =  "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune -o -path 'dist/**' -prune -o  -type f -print -o -type l -print 2> /dev/null"
 
@@ -450,6 +463,8 @@ nnoremap <Leader>o :.Gbrowse<CR>
 "*****************************************************************************
 "" Custom configs
 "*****************************************************************************
+autocmd FileType vue syntax sync fromstart
+
 
 "*****************************************************************************
 "*****************************************************************************
