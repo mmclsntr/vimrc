@@ -9,9 +9,6 @@ endif
 
 let vimplug_exists=expand('~/.vim/autoload/plug.vim')
 
-let g:vim_bootstrap_langs = ""
-let g:vim_bootstrap_editor = "vim"				" nvim or vim
-
 if !filereadable(vimplug_exists)
   if !executable("curl")
     echoerr "You have to install curl or first install vim-plug yourself!"
@@ -31,72 +28,51 @@ call plug#begin(expand('~/.vim/plugged'))
 "*****************************************************************************
 "" Plug install packages
 "*****************************************************************************
+"[ファイルツリー]
 Plug 'scrooloose/nerdtree'
 Plug 'jistr/vim-nerdtree-tabs'
-Plug 'tpope/vim-commentary'
+"[Git 変更比較・編集]
 Plug 'tpope/vim-fugitive'
+"[Git 変更参照]
+Plug 'airblade/vim-gitgutter'
+"[ステータスバー]
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-Plug 'airblade/vim-gitgutter'
+"[文字列検索]
 Plug 'vim-scripts/grep.vim'
-Plug 'vim-scripts/CSApprox'
+"[スペースにハイライト,削除]
 Plug 'bronson/vim-trailing-whitespace'
-Plug 'Raimondi/delimitMate'
-Plug 'majutsushi/tagbar'
-""Plug 'scrooloose/syntastic'
+"[カッコを自動で閉じる]
+"Plug 'Raimondi/delimitMate'
+"[インデント見やすく]
 Plug 'Yggdroot/indentLine'
-Plug 'avelino/vim-bootstrap-updater'
+"[Vim用言語パック]
 Plug 'sheerun/vim-polyglot'
+"fzf
 if isdirectory('/usr/local/opt/fzf')
   Plug '/usr/local/opt/fzf' | Plug 'junegunn/fzf.vim'
 else
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --bin' }
   Plug 'junegunn/fzf.vim'
 endif
+"[非同期処理]
 let g:make = 'gmake'
 if exists('make')
         let g:make = 'make'
 endif
 Plug 'Shougo/vimproc.vim', {'do': g:make}
-
-"" Vim-Session
+"[セッション]
 Plug 'xolox/vim-misc'
 Plug 'xolox/vim-session'
-
-if v:version >= 703
-  Plug 'Shougo/vimshell.vim'
-endif
-
-if v:version >= 704
-  "" Snippets
-  Plug 'SirVer/ultisnips'
-endif
-
-Plug 'honza/vim-snippets'
-
-"" Color
-Plug 'tomasr/molokai'
-
-"" neovim
-Plug 'autozimu/LanguageClient-neovim', {
-    \ 'branch': 'next',
-    \ 'do': 'bash install.sh',
-    \ }
-Plug 'Shougo/deoplete.nvim'
-Plug 'Shougo/unite.vim'
-
-
-"*****************************************************************************
-"" Custom bundles
-"*****************************************************************************
-
-"*****************************************************************************
-"*****************************************************************************
+"[カラースキーマ]
+"Plug 'tomasr/molokai'
+"[構文チェック]
+Plug 'w0rp/ale'
 
 "" Include user's extra bundle
-if filereadable(expand("~/.vimrc.local.bundles"))
-  source ~/.vimrc.local.bundles
-endif
+"f filereadable(expand("~/.vimrc.local.bundles"))
+" source ~/.vimrc.local.bundles
+"ndif
 
 call plug#end()
 
@@ -144,12 +120,6 @@ set noswapfile
 set fileformats=unix,dos,mac
 "set ambiwidth=double
 
-if exists('$SHELL')
-    set shell=$SHELL
-else
-    set shell=/bin/sh
-endif
-
 " session management
 let g:session_directory = "~/.vim/session"
 let g:session_autoload = "no"
@@ -164,9 +134,9 @@ set ruler
 set number
 
 let no_buffers_menu=1
-if !exists('g:not_finish_vimplug')
-  colorscheme molokai
-endif
+"if !exists('g:not_finish_vimplug')
+"  colorscheme molokai
+"endif
 
 set mousemodel=popup
 set t_Co=256
@@ -179,15 +149,12 @@ if has("gui_running")
     set transparency=7
   endif
 else
-  let g:CSApprox_loaded = 1
-
   " IndentLine
   let g:indentLine_enabled = 1
   let g:indentLine_concealcursor = 0
   let g:indentLine_char = '┆'
   let g:indentLine_faster = 1
 
-  
   if $COLORTERM == 'gnome-terminal'
     set term=gnome-256color
   else
@@ -195,7 +162,6 @@ else
       set term=xterm-256color
     endif
   endif
-  
 endif
 
 
@@ -272,29 +238,10 @@ nnoremap <silent> <F3> :NERDTreeToggle<CR>
 nnoremap <silent> <leader>f :Rgrep<CR>
 let Grep_Default_Options = '-IR'
 let Grep_Skip_Files = '*.log *.db'
-let Grep_Skip_Dirs = '.git node_modules'
+let Grep_Skip_Dirs = '.git node_modules __pycache__'
 
-" vimshell.vim
-let g:vimshell_user_prompt = 'fnamemodify(getcwd(), ":~")'
-let g:vimshell_prompt =  '$ '
-
-" terminal emulation
-if g:vim_bootstrap_editor == 'nvim'
-  nnoremap <silent> <leader>sh :terminal<CR>
-else
-  nnoremap <silent> <leader>sh :VimShellCreate<CR>
-endif
-
-"*****************************************************************************
-"" Functions
-"*****************************************************************************
-if !exists('*s:setupWrapping')
-  function s:setupWrapping()
-    set wrap
-    set wm=2
-    set textwidth=79
-  endfunction
-endif
+"ale
+let g:ale_lint_on_text_changed = 0
 
 "*****************************************************************************
 "" Autocmd Rules
@@ -309,12 +256,6 @@ augroup END
 augroup vimrc-remember-cursor-position
   autocmd!
   autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
-augroup END
-
-"" txt
-augroup vimrc-wrapping
-  autocmd!
-  autocmd BufRead,BufNewFile *.txt call s:setupWrapping()
 augroup END
 
 "" make/cmake
@@ -389,25 +330,6 @@ endif
 cnoremap <C-P> <C-R>=expand("%:p:h") . "/" <CR>
 nnoremap <silent> <leader>b :Buffers<CR>
 nnoremap <silent> <leader>e :FZF -m<CR>
-
-" snippets
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<tab>"
-let g:UltiSnipsJumpBackwardTrigger="<c-b>"
-let g:UltiSnipsEditSplit="vertical"
-
-" syntastic
-let g:syntastic_always_populate_loc_list=1
-let g:syntastic_error_symbol='✗'
-let g:syntastic_warning_symbol='⚠'
-let g:syntastic_style_error_symbol = '✗'
-let g:syntastic_style_warning_symbol = '⚠'
-let g:syntastic_auto_loc_list=1
-let g:syntastic_aggregate_errors = 1
-
-" Tagbar
-nmap <silent> <F4> :TagbarToggle<CR>
-let g:tagbar_autofocus = 1
 
 " Disable visualbell
 set noerrorbells visualbell t_vb=
