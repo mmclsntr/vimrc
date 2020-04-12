@@ -31,6 +31,8 @@ call plug#begin(expand('~/.vim/plugged'))
 "[ファイルツリー]
 Plug 'scrooloose/nerdtree'
 Plug 'jistr/vim-nerdtree-tabs'
+"[テーブル整形]
+Plug 'dhruvasagar/vim-table-mode'
 "[Git 変更比較・編集]
 Plug 'tpope/vim-fugitive'
 "[Git 変更参照]
@@ -42,10 +44,12 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'vim-scripts/grep.vim'
 "[スペースにハイライト,削除]
 Plug 'bronson/vim-trailing-whitespace'
-"[カッコを自動で閉じる]
-"Plug 'Raimondi/delimitMate'
 "[インデント見やすく]
 Plug 'Yggdroot/indentLine'
+"[Ctags]
+Plug 'szw/vim-tags'
+"[tagbar]
+Plug 'majutsushi/tagbar'
 "[Vim用言語パック]
 Plug 'sheerun/vim-polyglot'
 "fzf
@@ -65,9 +69,11 @@ Plug 'Shougo/vimproc.vim', {'do': g:make}
 Plug 'xolox/vim-misc'
 Plug 'xolox/vim-session'
 "[カラースキーマ]
-"Plug 'tomasr/molokai'
+Plug 'tomasr/molokai'
 "[構文チェック]
 Plug 'w0rp/ale'
+" Jedi-vim
+Plug 'davidhalter/jedi-vim'
 
 "" Include user's extra bundle
 "f filereadable(expand("~/.vimrc.local.bundles"))
@@ -116,6 +122,7 @@ nmap <Esc><Esc> :nohlsearch<CR><Esc>
 "" Directories for swp files
 set nobackup
 set noswapfile
+set noundofile
 
 set fileformats=unix,dos,mac
 "set ambiwidth=double
@@ -134,9 +141,9 @@ set ruler
 set number
 
 let no_buffers_menu=1
-"if !exists('g:not_finish_vimplug')
-"  colorscheme molokai
-"endif
+if !exists('g:not_finish_vimplug')
+  colorscheme molokai
+endif
 
 set mousemodel=popup
 set t_Co=256
@@ -152,7 +159,7 @@ else
   " IndentLine
   let g:indentLine_enabled = 1
   let g:indentLine_concealcursor = 0
-  let g:indentLine_char = '┆'
+  let g:indentLine_char = '¦'
   let g:indentLine_faster = 1
 
   if $COLORTERM == 'gnome-terminal'
@@ -207,6 +214,9 @@ let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tagbar#enabled = 1
 let g:airline_skip_empty_sections = 1
 
+" vim-table-mode
+let g:table_mode_corner = '|'
+
 "*****************************************************************************
 "" Abbreviations
 "*****************************************************************************
@@ -231,17 +241,24 @@ let g:nerdtree_tabs_focus_on_files=1
 let g:NERDTreeMapOpenInTabSilent = '<RightMouse>'
 let g:NERDTreeWinSize = 50
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite
-nnoremap <silent> <F2> :NERDTreeFind<CR>
-nnoremap <silent> <F3> :NERDTreeToggle<CR>
+
+let g:nerdtree_tabs_open_on_console_startup=1
 
 " grep.vim
-nnoremap <silent> <leader>f :Rgrep<CR>
 let Grep_Default_Options = '-IR'
 let Grep_Skip_Files = '*.log *.db'
 let Grep_Skip_Dirs = '.git node_modules __pycache__'
 
 "ale
 let g:ale_lint_on_text_changed = 0
+
+" vim-tags
+let g:vim_tags_ctags_binary = "/usr/local/bin/ctags"
+let g:vim_tags_auto_generate = 1
+let g:vim_tags_ignore_files = ['.gitignore', '.svnignore', '.cvsignore', '__pycache__/*', '.serverless/*']
+let g:vim_tags_directories = [".git", ".hg", ".svn", ".bzr", "_darcs", "CVS"]
+let g:vim_tags_project_tags_command = "{CTAGS} -R {OPTIONS} {DIRECTORY} 2>/dev/null"
+let g:vim_tags_gems_tags_command = "{CTAGS} -R {OPTIONS} `bundle show --paths` 2>/dev/null"
 
 "*****************************************************************************
 "" Autocmd Rules
@@ -271,44 +288,6 @@ set autoread
 "" Mappings
 "*****************************************************************************
 
-"" Split
-noremap <Leader>h :<C-u>split<CR>
-noremap <Leader>v :<C-u>vsplit<CR>
-
-"" Git
-noremap <Leader>ga :Gwrite<CR>
-noremap <Leader>gc :Gcommit<CR>
-noremap <Leader>gsh :Gpush<CR>
-noremap <Leader>gll :Gpull<CR>
-noremap <Leader>gs :Gstatus<CR>
-noremap <Leader>gb :Gblame<CR>
-noremap <Leader>gd :Gvdiff<CR>
-noremap <Leader>gr :Gremove<CR>
-
-" session management
-nnoremap <leader>so :OpenSession<Space>
-nnoremap <leader>ss :SaveSession<Space>
-nnoremap <leader>sd :DeleteSession<CR>
-nnoremap <leader>sc :CloseSession<CR>
-
-"" Tabs
-nnoremap <Tab> gt
-nnoremap <S-Tab> gT
-nnoremap <silent> <S-t> :tabnew<CR>
-
-"" Cursor
-nnoremap j gj
-nnoremap k gk
-
-"" Set working directory
-nnoremap <leader>. :lcd %:p:h<CR>
-
-"" Opens an edit command with the path of the currently edited file filled in
-noremap <Leader>e :e <C-R>=expand("%:p:h") . "/" <CR>
-
-"" Opens a tab edit command with the path of the currently edited file filled
-noremap <Leader>te :tabe <C-R>=expand("%:p:h") . "/" <CR>
-
 "" fzf.vim
 set wildmode=list:longest
 set wildignore+=*.o,*.obj,.git,*.rbc,*.pyc,__pycache__
@@ -327,10 +306,6 @@ if executable('rg')
   command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --hidden --follow --glob "!.git/*" --color "always" '.shellescape(<q-args>).'| tr -d "\017"', 1, <bang>0)
 endif
 
-cnoremap <C-P> <C-R>=expand("%:p:h") . "/" <CR>
-nnoremap <silent> <leader>b :Buffers<CR>
-nnoremap <silent> <leader>e :FZF -m<CR>
-
 " Disable visualbell
 set noerrorbells visualbell t_vb=
 if has('autocmd')
@@ -343,44 +318,11 @@ endif
 "endif
 set clipboard+=unnamed
 
-noremap YY "+y<CR>
-noremap <leader>p "+gP<CR>
-noremap XX "+x<CR>
-
 if has('macunix')
   " pbcopy for OSX copy/paste
   vmap <C-x> :!pbcopy<CR>
   vmap <C-c> :w !pbcopy<CR><CR>
 endif
-
-"" Buffer nav
-noremap <leader>z :bp<CR>
-noremap <leader>q :bp<CR>
-noremap <leader>x :bn<CR>
-noremap <leader>w :bn<CR>
-
-"" Close buffer
-noremap <leader>c :bd<CR>
-
-"" Clean search (highlight)
-nnoremap <silent> <leader><space> :noh<cr>
-
-"" Switching windows
-noremap <C-j> <C-w>j
-noremap <C-k> <C-w>k
-noremap <C-l> <C-w>l
-noremap <C-h> <C-w>h
-
-"" Vmap for maintain Visual Mode after shifting > and <
-vmap < <gv
-vmap > >gv
-
-"" Move visual block
-vnoremap J :m '>+1<CR>gv=gv
-vnoremap K :m '<-2<CR>gv=gv
-
-"" Open current line on GitHub
-nnoremap <Leader>o :.Gbrowse<CR>
 
 "*****************************************************************************
 "" Custom configs
