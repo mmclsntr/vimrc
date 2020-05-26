@@ -74,6 +74,10 @@ Plug 'tomasr/molokai'
 Plug 'w0rp/ale'
 " Jedi-vim
 Plug 'davidhalter/jedi-vim'
+" Buffer kill
+Plug 'qpkorr/vim-bufkill'
+
+Plug 'tyru/vim-altercmd'
 
 "" Include user's extra bundle
 "f filereadable(expand("~/.vimrc.local.bundles"))
@@ -137,6 +141,7 @@ let g:session_command_aliases = 1
 "" Visual Settings
 "*****************************************************************************
 syntax on
+set synmaxcol=320
 set ruler
 set number
 
@@ -207,10 +212,14 @@ if exists("*fugitive#statusline")
 endif
 
 " vim-airline
-let g:airline_theme = 'powerlineish'
+let g:airline_theme = 'papercolor'
 let g:airline#extensions#syntastic#enabled = 1
 let g:airline#extensions#branch#enabled = 1
 let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#formatter = 'default'
+let g:airline#extensions#tabline#show_splits = 1
+let g:airline#extensions#tabline#tab_nr_type = 1
+let g:airline#extensions#tabline#buffer_nr_show = 1
 let g:airline#extensions#tagbar#enabled = 1
 let g:airline_skip_empty_sections = 1
 
@@ -255,6 +264,7 @@ let g:ale_lint_on_text_changed = 0
 " vim-tags
 let g:vim_tags_ctags_binary = "/usr/local/bin/ctags"
 let g:vim_tags_auto_generate = 1
+let g:vim_tags_main_file = ".tags"
 let g:vim_tags_ignore_files = ['.gitignore', '.svnignore', '.cvsignore', '__pycache__/*', '.serverless/*']
 let g:vim_tags_directories = [".git", ".hg", ".svn", ".bzr", "_darcs", "CVS"]
 let g:vim_tags_project_tags_command = "{CTAGS} -R {OPTIONS} {DIRECTORY} 2>/dev/null"
@@ -267,6 +277,11 @@ let g:vim_tags_gems_tags_command = "{CTAGS} -R {OPTIONS} `bundle show --paths` 2
 augroup vimrc-sync-fromstart
   autocmd!
   autocmd BufEnter * :syntax sync maxlines=200
+augroup END
+
+augroup vimrc-highlight
+  autocmd!
+  autocmd Syntax * syntax sync minlines=100
 augroup END
 
 "" Remember cursor position
@@ -324,10 +339,19 @@ if has('macunix')
   vmap <C-c> :w !pbcopy<CR><CR>
 endif
 
+" bufkill
+autocmd VimEnter * AlterCommand bun BUN
+autocmd VimEnter * AlterCommand bd BD
+autocmd VimEnter * AlterCommand bw BW
+autocmd VimEnter * AlterCommand BD bd
+autocmd VimEnter * AlterCommand BW bw
+autocmd VimEnter * AlterCommand BUN bun
+
 "*****************************************************************************
 "" Custom configs
 "*****************************************************************************
 autocmd FileType vue syntax sync fromstart
+autocmd FileType py syntax sync fromstart
 
 
 "*****************************************************************************
