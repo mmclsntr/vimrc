@@ -119,10 +119,20 @@ let g:lsp_settings = {
 \   'pyls-all': {
 \     'workspace_config': {
 \       'pyls': {
-\         'configurationSources': ['flake8']
-\       }
-\     }
-\   },
+\         'configurationSources': ['flake8'],
+\         'plugins': {
+\           'mccabe'              : { 'enabled': v:false },
+\           'preload'             : { 'enabled': v:false },
+\           'pycodestyle'         : { 'enabled': v:false },
+\           'pydocstyle'          : { 'enabled': v:false },
+\           'pyflakes'            : { 'enabled': v:true },
+\           'pylint'              : { 'enabled': v:false },
+\           'rope_completion'     : { 'enabled': v:false },
+\           'yapf'                : { 'enabled': v:false }
+\        }
+\      }
+\    }
+\  }
 \}
 
 let g:lsp_diagnostics_enabled = 1
@@ -195,7 +205,7 @@ set fileencodings=utf8
 set bomb
 set binary
 set ttyfast
-set mouse=a
+set mouse-=a
 set ttymouse=xterm2
 
 "" Fix backspace indent
@@ -281,7 +291,7 @@ nnoremap N Nzzzv
 "" The PC is fast enough, do syntax highlight syncing from start unless 200 lines
 augroup vimrc-sync-fromstart
   autocmd!
-  autocmd BufEnter * :syntax sync maxlines=200
+  autocmd BufEnter * :syntax sync maxlines=400
 augroup END
 
 augroup vimrc-highlight
