@@ -242,12 +242,17 @@ set fileformats=unix,dos,mac
 set wildmenu wildmode=full
 
 "" Set no wrap
-set nowrap
+" set nowrap
 
 " Disable visualbell
 set belloff=all
 set noerrorbells
 
+" Cursor
+nnoremap j gj
+nnoremap k gk
+nnoremap <Down> gj
+nnoremap <Up>   gk
 
 "*****************************************************************************
 "" Visual Settings
