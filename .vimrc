@@ -125,9 +125,12 @@ let g:lsp_settings = {
 \           'preload'             : { 'enabled': v:false },
 \           'pycodestyle'         : { 'enabled': v:false },
 \           'pydocstyle'          : { 'enabled': v:false },
+\           'flake8'              : { 'enabled': v:true },
 \           'pyflakes'            : { 'enabled': v:true },
 \           'pylint'              : { 'enabled': v:false },
 \           'rope_completion'     : { 'enabled': v:false },
+\           'pyls_mypy'           : { 'enabled': v:true },
+\           'autopep8'            : { 'enabled': v:true },
 \           'yapf'                : { 'enabled': v:false }
 \        }
 \      }
@@ -135,10 +138,10 @@ let g:lsp_settings = {
 \  }
 \}
 
-let g:lsp_diagnostics_enabled = 1
-let g:lsp_diagnostics_echo_cursor = 1
+let g:lsp_diagnostics_echo_cursor = 0
 let g:lsp_signature_help_enabled = 1
 let g:lsp_signs_enabled = 1
+let g:lsp_diagnostics_enabled = 0
 let g:lsp_signs_error = {'text': '✗'}
 let g:lsp_signs_warning = {'text': '‼'}
 let g:lsp_signs_hint = {'text': '?'}
