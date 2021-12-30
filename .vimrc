@@ -26,8 +26,8 @@ endif
 call plug#begin(expand('~/.vim/plugged'))
 
 " NerdTree
-Plug 'scrooloose/nerdtree'
-Plug 'jistr/vim-nerdtree-tabs'
+" Plug 'scrooloose/nerdtree'
+" Plug 'jistr/vim-nerdtree-tabs'
 
 " Git
 Plug 'tpope/vim-fugitive'
@@ -58,10 +58,13 @@ Plug 'tyru/vim-altercmd'
 Plug 'christoomey/vim-tmux-navigator'
 
 " ISP
-Plug 'prabirshrestha/vim-lsp'
-Plug 'mattn/vim-lsp-settings'
-Plug 'prabirshrestha/asyncomplete.vim'
-Plug 'prabirshrestha/asyncomplete-lsp.vim'
+" Plug 'prabirshrestha/vim-lsp'
+" Plug 'mattn/vim-lsp-settings'
+" Plug 'prabirshrestha/asyncomplete.vim'
+"Plug 'prabirshrestha/asyncomplete-lsp.vim'
+
+" coc.nvim
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " Outline view
 Plug 'liuchengxu/vista.vim'
@@ -87,71 +90,105 @@ let g:indentLine_concealcursor = 0
 let g:indentLine_char = '¦'
 let g:indentLine_faster = 1
 
+" Coc.nvim
+let g:coc_global_extensions = [
+            \'coc-highlight',
+            \'coc-lists',
+            \'coc-json',
+            \'coc-git',
+            \'coc-pyright',
+            \'coc-vetur',
+            \'coc-tsserver',
+            \'coc-sh',
+            \'coc-markdownlint',
+            \'coc-vimlsp',
+            \'coc-explorer',
+            \'coc-css',
+            \'coc-html',
+            \'coc-yaml'
+            \]
+
+" Make <CR> auto-select the first completion item and notify coc.nvim to
+" format on enter, <cr> could be remapped by other vim plugin
+inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+" Use `[g` and `]g` to navigate diagnostics
+" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+" GoTo code navigation.
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+nmap <silent> <space>rn <Plug>(coc-rename)
+nmap <silent> <space>fmt <Plug>(coc-format)
+
+" Use K to show documentation in preview window.
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+" coc-explorer
+nnoremap <space>e :CocCommand explorer<CR>
+
+" LSP
+" function! s:on_lsp_buffer_enabled() abort
+"     setlocal omnifunc=lsp#complete
+"     setlocal signcolumn=yes
+"     "if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+"     nmap <buffer> gd <plug>(lsp-definition)
+"     nmap <buffer> gr <plug>(lsp-references)
+"     nmap <buffer> gi <plug>(lsp-implementation)
+"     nmap <buffer> gt <plug>(lsp-type-definition)
+"     nmap <buffer> [g <Plug>(lsp-previous-diagnostic)
+"     nmap <buffer> ]g <Plug>(lsp-next-diagnostic)
+"     nmap <buffer> K <plug>(lsp-hover)
+" 
+"     let g:lsp_format_sync_timeout = 1000
+" endfunction
+" 
+" augroup lsp_install
+"     au!
+"     " call s:on_lsp_buffer_enabled only for languages that has the server registered.
+"     autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+" augroup END
+" 
+" let g:lsp_diagnostics_echo_cursor = 1
+" let g:lsp_signature_help_enabled = 1
+" let g:lsp_signs_enabled = 1
+" let g:lsp_diagnostics_enabled = 1
+" let g:lsp_signs_error = {'text': '✗'}
+" let g:lsp_signs_warning = {'text': '‼'}
+" let g:lsp_signs_hint = {'text': '?'}
+" let g:lsp_signs_information = {'text': 'i'}
+" let g:lsp_settings = {
+" \   'pyls-all': {
+" \     'workspace_config': {
+" \       'pyls': {
+" \         'configurationSources': ['pycodestyle'],
+" \      }
+" \    }
+" \  }
+" \}
+
 " Vista
-let g:vista_default_executive = 'vim_lsp'
+let g:vista_default_executive = 'coc'
 let g:vista_update_on_text_changed = 1
 let g:vista_sidebar_width = 40
 let g:vista_echo_cursor = 0
 
-" LSP
-function! s:on_lsp_buffer_enabled() abort
-    setlocal omnifunc=lsp#complete
-    setlocal signcolumn=yes
-    "if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
-    nmap <buffer> gd <plug>(lsp-definition)
-    nmap <buffer> gr <plug>(lsp-references)
-    nmap <buffer> gi <plug>(lsp-implementation)
-    nmap <buffer> gt <plug>(lsp-type-definition)
-    nmap <buffer> [g <Plug>(lsp-previous-diagnostic)
-    nmap <buffer> ]g <Plug>(lsp-next-diagnostic)
-    nmap <buffer> K <plug>(lsp-hover)
 
-    let g:lsp_format_sync_timeout = 1000
-endfunction
+" Polyglot
+let g:vim_markdown_conceal = 0
+let g:vim_markdown_conceal_code_blocks = 0
 
-augroup lsp_install
-    au!
-    " call s:on_lsp_buffer_enabled only for languages that has the server registered.
-    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
-augroup END
-
-let g:lsp_settings = {
-\   'pyls-all': {
-\     'workspace_config': {
-\       'pyls': {
-\         'configurationSources': ['flake8'],
-\         'plugins': {
-\           'mccabe'              : { 'enabled': v:false },
-\           'preload'             : { 'enabled': v:false },
-\           'pycodestyle'         : { 'enabled': v:false },
-\           'pydocstyle'          : { 'enabled': v:false },
-\           'flake8'              : { 'enabled': v:true },
-\           'pyflakes'            : { 'enabled': v:true },
-\           'pylint'              : { 'enabled': v:false },
-\           'rope_completion'     : { 'enabled': v:false },
-\           'pyls_mypy'           : { 'enabled': v:true },
-\           'autopep8'            : { 'enabled': v:true },
-\           'yapf'                : { 'enabled': v:false }
-\        }
-\      }
-\    }
-\  }
-\}
-
-let g:lsp_diagnostics_echo_cursor = 0
-let g:lsp_signature_help_enabled = 1
-let g:lsp_signs_enabled = 1
-let g:lsp_diagnostics_enabled = 0
-let g:lsp_signs_error = {'text': '✗'}
-let g:lsp_signs_warning = {'text': '‼'}
-let g:lsp_signs_hint = {'text': '?'}
-let g:lsp_signs_information = {'text': 'i'}
 
 " Asyncomplete
-let g:asyncomplete_auto_popup = 1
-let g:asyncomplete_auto_completeopt = 1
-set completeopt=menuone,noinsert,noselect,preview
-let g:asyncomplete_popup_delay = 200
+"let g:asyncomplete_auto_popup = 1
+"let g:asyncomplete_auto_completeopt = 1
+"set completeopt=menuone,noinsert,noselect,preview
+"let g:asyncomplete_popup_delay = 200
 
 " NERDTree
 let g:NERDTreeChDirMode=2
@@ -268,7 +305,7 @@ set number
 "" Color 256
 set t_Co=256
 if !exists('g:not_finish_vimplug')
-  colorscheme molokai
+    colorscheme murphy
 endif
 
 "" Scroll offset.
@@ -299,12 +336,12 @@ nnoremap N Nzzzv
 "" The PC is fast enough, do syntax highlight syncing from start unless 200 lines
 augroup vimrc-sync-fromstart
   autocmd!
-  autocmd BufEnter * :syntax sync maxlines=400
+  autocmd BufEnter * :syntax sync maxlines=1000
 augroup END
 
 augroup vimrc-highlight
   autocmd!
-  autocmd Syntax * syntax sync minlines=100
+  autocmd Syntax * syntax sync minlines=1000
 augroup END
 
 "" Remember cursor position
