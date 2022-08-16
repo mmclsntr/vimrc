@@ -97,6 +97,7 @@ let g:coc_global_extensions = [
             \'coc-json',
             \'coc-git',
             \'coc-pyright',
+            \'coc-go',
             \'coc-vetur',
             \'coc-tsserver',
             \'coc-sh',
@@ -130,7 +131,7 @@ nmap <silent> <space>fmt <Plug>(coc-format)
 nnoremap <silent> K :call <SID>show_documentation()<CR>
 
 " coc-explorer
-nnoremap <space>e :CocCommand explorer<CR>
+nnoremap <space>e :CocCommand explorer --no-toggle<CR>
 
 " LSP
 " function! s:on_lsp_buffer_enabled() abort
@@ -301,6 +302,7 @@ syntax on
 set synmaxcol=320
 set ruler
 set number
+set re=0
 
 "" Color 256
 set t_Co=256
