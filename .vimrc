@@ -83,6 +83,7 @@ let g:indentLine_faster = 1
 " Coc.nvim
 let g:coc_global_extensions = [
             \'coc-highlight',
+            \'coc-diagnostic',
             \'coc-lists',
             \'coc-json',
             \'coc-git',
@@ -118,7 +119,17 @@ nmap <silent> <space>rn <Plug>(coc-rename)
 nmap <silent> <space>fmt <Plug>(coc-format)
 
 " Use K to show documentation in preview window.
-nnoremap <silent> K :call <SID>show_documentation()<CR>
+nnoremap <silent> K :call ShowDocumentation()<CR>
+function! ShowDocumentation()
+  if CocAction('hasProvider', 'hover')
+    call CocActionAsync('doHover')
+  else
+    call feedkeys('K', 'in')
+  endif
+endfunction
+
+" Highlight the symbol and its references when holding the cursor.
+autocmd CursorHold * silent call CocActionAsync('highlight')
 
 " coc-explorer
 nnoremap <space>e :CocCommand explorer --no-toggle<CR>
@@ -272,6 +283,10 @@ set virtualedit=onemore
 " search will center on the line it's found in.
 nnoremap n nzzzv
 nnoremap N Nzzzv
+
+"" conceal
+set conceallevel=0
+let g:vim_json_syntax_conceal = 0
 
 "*****************************************************************************
 " Autocmd Rules
