@@ -7,6 +7,12 @@
 ln -s vimrc/.vimrc ~/.vimrc
 ```
 
+### Lite ver
+
+```
+ln -s vimrc/lite/.vimrc ~/.vimrc
+```
+
 ## Install Nerd Font
 Check and install below
 
